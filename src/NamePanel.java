@@ -8,7 +8,7 @@ public class NamePanel extends JPanel{
         this.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10),
         		BorderFactory.createLineBorder(Color.BLACK)));
         
-        JLabel softwareName = new JLabel("thetaByte", JLabel.CENTER);
+        JLabel softwareName = new JLabel("thetaSeat", JLabel.CENTER);
         JLabel companyName = new JLabel("thetaByte Technologies, Inc.", JLabel.CENTER);
         
         //Create font from Bree Serif file

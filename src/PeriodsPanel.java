@@ -4,7 +4,6 @@ import java.io.*;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 
 public class PeriodsPanel extends JPanel{
@@ -84,6 +83,7 @@ public class PeriodsPanel extends JPanel{
 	}
 	
 	public void removePeriod(int period){
+		//TODO add confirmation dialogue box
 		//Remove the entry for the period that got deleted
 		periodPanels.remove(periods.get(period));
 		periods.remove(period);
