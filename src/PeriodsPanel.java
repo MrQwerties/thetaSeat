@@ -68,23 +68,34 @@ public class PeriodsPanel extends JPanel{
 			}
 		}
 		
-		String line = periodList.nextLine().trim();
-		String[] periodNames = line.split(" ");
-		int[] result = new int[periodNames.length];
-		
-		for(int i = 0; i < periodNames.length; i++){
-			result[i] = Integer.parseInt(periodNames[i]);
+		ArrayList<Integer> periodNumbers = new ArrayList<Integer>();
+		while(periodList.hasNextLine()){
+			String line = periodList.nextLine().trim();
+			periodNumbers.add(Integer.parseInt(line.substring(0, line.indexOf(" "))));
 		}
 		
 		periodList.close();
+
+		int[] result = new int[periodNumbers.size()];
+		
+		for(int i = 0; i < periodNumbers.size(); i++){
+			result[i] = periodNumbers.get(i);
+		}
 		
 		Arrays.sort(result);		
 		return result;
 	}
 	
 	public void removePeriod(int period){
-		//TODO add confirmation dialogue box
-		//Remove the entry for the period that got deleted
+		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+		int response = JOptionPane.showConfirmDialog(topFrame, "Please confirm: do you want to delete period " + period + " from the list?",
+				"CONFIRM", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+		if(response == JOptionPane.YES_OPTION){
+			trueRemovePeriod(period);
+		}
+	}
+	
+	public void trueRemovePeriod(int period){
 		periodPanels.remove(periods.get(period));
 		periods.remove(period);
 		
@@ -92,19 +103,25 @@ public class PeriodsPanel extends JPanel{
 		revalidate();
 		repaint();
 		
-		//Update the period list
-		ArrayList<Integer> periodList = new ArrayList<Integer>();
-		for(int p : loadPeriods()){
-			periodList.add(p);
+		Scanner periodFile = null;
+		try{
+			periodFile = new Scanner(new File(PERIOD_LIST_FILE_NAME));
+		} catch (FileNotFoundException e){
+			//This should never happen
 		}
 		
-		periodList.remove(periodList.indexOf(period));
+		String result = "";
+		
+		while(periodFile.hasNextLine()){
+			String line = periodFile.nextLine();
+			if(line.length() > 0 && Integer.parseInt(line.split(" ")[0]) != period){
+				result += line + "\n";
+			}
+		}
 		
 		try{
 			PrintWriter out = new PrintWriter(PERIOD_LIST_FILE_NAME);
-			for(int p : periodList){
-				out.print(p + " ");
-			}
+			out.print(result);
 			out.close();
 		} catch (FileNotFoundException e){
 			//This line shouldn't happen
