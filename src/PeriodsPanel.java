@@ -9,10 +9,10 @@ import java.util.HashMap;
 public class PeriodsPanel extends JPanel{
 	private HashMap<Integer, PeriodSelectionPanel> periods;
 	private JPanel periodPanels;
-	private static final String PERIOD_LIST_FILE_NAME = "thetaSeat_period_list";
+	private int selectedPeriod;
 	
 	public PeriodsPanel(){
-		super(new BorderLayout());		
+		super(new BorderLayout());
 		//This creates a thin black border with 30 pixels of padding around it where no other components can go		
 		this.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30),
 				BorderFactory.createLineBorder(Color.black, 1)));
@@ -35,6 +35,7 @@ public class PeriodsPanel extends JPanel{
 		instructions.add(title, BorderLayout.NORTH);
 		instructions.add(text, BorderLayout.SOUTH);
 		
+		selectedPeriod = -1;
 		int[] periodList = loadPeriods();
 		
 		periodPanels = new JPanel(new GridLayout(0, 1));
@@ -56,13 +57,13 @@ public class PeriodsPanel extends JPanel{
 	public static int[] loadPeriods(){
 		Scanner periodList = null;
 		try{
-			periodList = new Scanner(new File(PERIOD_LIST_FILE_NAME));
+			periodList = new Scanner(new File(Constants.PERIOD_LIST_FILE_NAME));
 		} catch (FileNotFoundException e){
 			try{
 				//Creates a new file called thetaSeat_period_list and opens that
-				PrintWriter out = new PrintWriter(PERIOD_LIST_FILE_NAME);
+				PrintWriter out = new PrintWriter(Constants.PERIOD_LIST_FILE_NAME);
 				out.close();
-				periodList = new Scanner(new File(PERIOD_LIST_FILE_NAME));
+				periodList = new Scanner(new File(Constants.PERIOD_LIST_FILE_NAME));
 			} catch (IOException f){
 				return new int[0]; //This should never happen, if this line is executed, something has gone horribly wrong
 			}
@@ -105,7 +106,7 @@ public class PeriodsPanel extends JPanel{
 		
 		Scanner periodFile = null;
 		try{
-			periodFile = new Scanner(new File(PERIOD_LIST_FILE_NAME));
+			periodFile = new Scanner(new File(Constants.PERIOD_LIST_FILE_NAME));
 		} catch (FileNotFoundException e){
 			//This should never happen
 		}
@@ -120,11 +121,28 @@ public class PeriodsPanel extends JPanel{
 		}
 		
 		try{
-			PrintWriter out = new PrintWriter(PERIOD_LIST_FILE_NAME);
+			PrintWriter out = new PrintWriter(Constants.PERIOD_LIST_FILE_NAME);
 			out.print(result);
 			out.close();
 		} catch (FileNotFoundException e){
 			//This line shouldn't happen
 		}
+	}
+
+	public void choosePeriod(int period) {
+		if (period == selectedPeriod){
+			periods.get(selectedPeriod).unhighlight();
+			selectedPeriod = -1;
+		} else{
+			if (selectedPeriod != -1) {
+				periods.get(selectedPeriod).unhighlight();
+			}
+			selectedPeriod = period;
+			periods.get(selectedPeriod).highlight();
+		}
+	}
+
+	public int getSelectedPeriod() {
+		return selectedPeriod;
 	}
 }

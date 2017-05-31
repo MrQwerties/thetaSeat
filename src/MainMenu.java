@@ -18,15 +18,17 @@ public class MainMenu extends JFrame{
         Image logoImage = getScaledImage(logo.getImage(), 150, 150);
         bottomContainer.add(new JLabel(new ImageIcon(logoImage)), BorderLayout.WEST);
         
+        PeriodsPanel periodSelect = new PeriodsPanel();
+        
         JPanel bottomMiddle = new JPanel(new BorderLayout());
         bottomMiddle.setBorder(BorderFactory.createEmptyBorder(40, 0, 40, 50));
         bottomMiddle.add(new AddPeriodButton(), BorderLayout.WEST);
-        bottomMiddle.add(new GenerateButton(), BorderLayout.EAST);
+        bottomMiddle.add(new GenerateButton(periodSelect), BorderLayout.EAST);
         
         bottomContainer.add(bottomMiddle, BorderLayout.CENTER);
         
         this.add(new NamePanel(), BorderLayout.NORTH);
-        this.add(new PeriodsPanel(), BorderLayout.CENTER);
+        this.add(periodSelect, BorderLayout.CENTER);
         this.add(bottomContainer, BorderLayout.SOUTH);
 	}
 	
