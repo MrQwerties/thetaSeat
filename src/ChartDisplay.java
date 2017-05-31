@@ -1,17 +1,31 @@
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Deque;
 
 public class ChartDisplay extends Canvas {
 	private thetaSeatChart chart;
 	private ArrayList<Student> students;
 	
+	private ArrayList<Seat> highlighted;
+	private Deque<ArrayList<Seat>> toUndo;
+	private Deque<ArrayList<Seat>> toRedo;
+	
 	private int period;
+	
+	private SaveButton mySave;
+	private SwitchButton mySwitch;
+	private UndoButton myUndo;
+	private RedoButton myRedo;
 	
 	private final int TWOSIE_SIZE = 65;
 	private final int TWOSIE_DOTS = 6;
@@ -24,6 +38,17 @@ public class ChartDisplay extends Canvas {
 		period = p;
 		
 		chart = new thetaSeatChart(new ArrayList<Seat>(), loadStudents(), loadOldTwosies());
+		
+		highlighted = new ArrayList<Seat>();
+		toUndo = new ArrayDeque<ArrayList<Seat>>();
+		toRedo = new ArrayDeque<ArrayList<Seat>>();
+		
+		addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            	handleClick(e.getX(), e.getY());
+            }
+        });
 	}
 	
 	public void paint(Graphics g){
@@ -88,8 +113,7 @@ public class ChartDisplay extends Canvas {
 	public void drawStudent(Graphics2D g, Student s){
 		g.setFont(new Font("Arial", Font.PLAIN, 9));
 		Position p = s.getSeat().getPosition();
-		g.drawString(s.getLast(), (int)p.x() + 2, (int)p.y() + TWOSIE_SIZE - 4);
-		g.drawString(s.getFirst(), (int)p.x() + 2, (int)p.y() + TWOSIE_SIZE - 19);
+		drawName((Graphics)g, s);
 	}
 	
 	public void drawStudent(Graphics g, Student s){
@@ -99,7 +123,7 @@ public class ChartDisplay extends Canvas {
 	}
 	
 	public void makeNewChart(){
-		chart.goodShuffle(2);
+		chart.goodShuffle(200);
 		
 		Graphics g = getGraphics();
 		
@@ -108,6 +132,8 @@ public class ChartDisplay extends Canvas {
 		}
 		
 		drawChart(g);
+		
+		mySave.setEnabled(true); //Now that there's a chart, the user can save it
 	}
 		
 	public void drawChart(Graphics g){		
@@ -192,5 +218,134 @@ public class ChartDisplay extends Canvas {
 	    } catch (IOException e) {
 	    	e.printStackTrace();
 	    }    
+	}
+	
+	public void handleClick(int x, int y){
+		for(Seat s : chart.getSeats()){
+			if((s.getPosition().x() < x) && (x < s.getPosition().x() + TWOSIE_SIZE)
+				&&(s.getPosition().y() < y) && (y < s.getPosition().y() + TWOSIE_SIZE)){
+				clickSeat(s);
+			}
+		}
+	}
+	
+	public void switchSeats(Seat s1, Seat s2){
+		Student temp = s1.getStudent();
+		s1.setStudent(s2.getStudent());
+		s2.setStudent(temp);
+		
+		Graphics g = getGraphics();
+		
+		clearSeat(g, s1);
+		clearSeat(g, s2);
+		drawName(g, s1.getStudent());
+		drawName(g, s2.getStudent());
+		
+		ArrayList<Seat> switched = new ArrayList<Seat>();
+		switched.add(s1); switched.add(s2);
+		
+		toUndo.push(switched);
+		
+		myUndo.setEnabled(true);
+	}
+	
+	public void clearSeat(Graphics g, Seat s){
+		g.clearRect((int)s.getPosition().x() + 1, (int)s.getPosition().y() + 1, TWOSIE_SIZE - 2, TWOSIE_SIZE - 2);
+	}
+	
+	public void clickSeat(Seat s){
+		if(highlighted.contains(s)){
+			highlighted.remove(s);
+			unhighlightSeat(s);
+			mySwitch.setEnabled(false);
+		} else{
+			highlighted.add(s);
+			highlightSeat(s);
+			if(highlighted.size() > 2){
+				unhighlightSeat(highlighted.get(0));
+				highlighted.remove(0);
+			}
+			if(highlighted.size() >= 2){
+				mySwitch.setEnabled(true);
+			}
+		}
+	}
+	
+	public void highlightSeat(Seat s){
+		Graphics g = getGraphics();
+		g.setColor(Color.YELLOW);
+		g.fillRect((int)s.getPosition().x() + 1, (int)s.getPosition().y() + 1, TWOSIE_SIZE - 2, TWOSIE_SIZE - 2);
+		g.setColor(Color.BLACK);
+		drawName(g, s.getStudent());
+	}
+	
+	public void unhighlightSeat(Seat s){
+		Graphics g = getGraphics();
+		clearSeat(g, s);
+		drawName(g, s.getStudent());
+	}
+
+	public void setSaveButton(SaveButton save) {
+		mySave = save;
+	}
+	
+	public void drawName(Graphics g, Student s){
+		if(s != null){
+			Position p = s.getPosition();
+			g.setFont(new Font("Arial", Font.PLAIN, 10));
+			g.drawString(s.getLast(), (int)p.x() + 2, (int)p.y() + TWOSIE_SIZE - 4);
+			g.drawString(s.getFirst(), (int)p.x() + 2, (int)p.y() + TWOSIE_SIZE - 19);
+		}
+	}
+
+	public void setSwitchButton(SwitchButton switcher) {
+		mySwitch = switcher;
+	}
+
+	public void switchSelectedSeats() {
+		if(highlighted.size() >= 2){
+			switchSeats(highlighted.get(0), highlighted.get(1));
+		}
+		
+		while(highlighted.size() > 0){
+			unhighlightSeat(highlighted.get(0));
+			highlighted.remove(0);
+		}
+	}
+	
+	public void undo(){
+		if(toUndo.size() > 0){
+			ArrayList<Seat> toSwitch = toUndo.pop();
+			switchSeats(toSwitch.get(0), toSwitch.get(1));
+			
+			toRedo.push(toSwitch);
+			myRedo.setEnabled(true);
+			
+			if(toUndo.size() == 0){
+				myUndo.setEnabled(false);
+			}
+		}
+	}
+	
+	public void redo(){
+		if(toRedo.size() > 0){
+			ArrayList<Seat> toSwitch = toRedo.pop();
+			switchSeats(toSwitch.get(0), toSwitch.get(1));
+			
+			toUndo.push(toSwitch);
+			myUndo.setEnabled(true);
+			
+			if(toRedo.size() == 0){
+				myRedo.setEnabled(false);
+			}
+		}
+	}
+
+	public void setUndoButton(UndoButton undo) {
+		myUndo = undo;
+	}
+
+	public void setRedoButton(RedoButton redo) {
+		myRedo = redo;
 	}
 }

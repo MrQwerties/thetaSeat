@@ -105,8 +105,12 @@ public class thetaSeatChart extends SeatingChart {
 				for(Twosie o : oldTwosies){
 					if(n.equals(o)){
 						done = false;
-						continue;
+						break;
 					}
+				}
+				
+				if(!done){
+					break;
 				}
 			}
 			

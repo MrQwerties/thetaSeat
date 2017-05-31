@@ -20,6 +20,9 @@ public class Twosie {
 	}
 	
 	public boolean equals(Twosie other){
+		if(students[1] == null){
+			return students[0].equals(other.students[0]) && students[1] == null;
+		}
 		return students[0].equals(other.students[0]) && students[1].equals(other.students[1]) ||
 				students[0].equals(other.students[1]) && students[1].equals(other.students[0]);
 	}

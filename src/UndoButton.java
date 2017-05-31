@@ -1,9 +1,20 @@
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.*;
 
-public class UndoButton extends JButton {
-	public UndoButton(){
-		super("UNDO");
+public class UndoButton extends ChartButton {
+	public UndoButton(ChartDisplay chart){
+		super("UNDO", chart);
+		
+		setEnabled(false);
+		
+		this.addActionListener(new ActionListener() {
+			  public void actionPerformed(ActionEvent e) { 
+					chart.undo();
+				  }
+				} );
 	}
 
 }

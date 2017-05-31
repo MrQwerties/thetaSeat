@@ -8,9 +8,14 @@ public class SaveButton extends ChartButton {
 	public SaveButton(ChartDisplay chart){
 		super("SAVE", chart);
 		
-		this.addActionListener(new ActionListener() { 
+		setEnabled(false);
+		
+		this.addActionListener(new ActionListener() {
 			  public void actionPerformed(ActionEvent e) { 
-				    myChart.exportImage("LOL.png");
+					JTextField nameField = new JTextField(20);
+				    if(JOptionPane.showConfirmDialog(null, new SaveImagePopup(nameField), "SAVE", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION){
+				    	myChart.exportImage(nameField.getText());
+				    }
 				  }
 				} );
 	}

@@ -41,7 +41,7 @@ public class AddPeriodButton extends JButton{
 				out.print(toWrite);
 				out.close();
 			} catch (NumberFormatException e){
-				JOptionPane.showMessageDialog(null, "<html>Invalid input for the period number. The period number must be entered in integer form (ex: 4).</html>",
+				JOptionPane.showMessageDialog(null, "<html>Invalid input for the period number. The period number must be<br>entered in integer form (ex: 4).</html>",
 						"ERROR", JOptionPane.ERROR_MESSAGE);
 			} catch (FileNotFoundException e){
 				JOptionPane.showMessageDialog(null, "<html>The program cannot find the file entered. Please check that the<br>file name is entered correctly and that the file itself is in the<br>correct folder.</html>",

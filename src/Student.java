@@ -81,4 +81,8 @@ public class Student {
 	public String toString(){
 		return lastName + "," + firstName + "," + gender + "," + race + "," + (visionProblems ? "YES" : "NO");
 	}
+
+	public Position getPosition() {
+		return location.getPosition();
+	}
 }

@@ -55,6 +55,7 @@ public class PeriodsPanel extends JPanel{
 	}
 	
 	public static int[] loadPeriods(){
+		//TODO: automatically remove bad files
 		Scanner periodList = null;
 		try{
 			periodList = new Scanner(new File(Constants.PERIOD_LIST_FILE_NAME));

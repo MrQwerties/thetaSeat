@@ -14,7 +14,7 @@ public class Seat {
 	
 	public void setStudent(Student s){
 		occupant = s;
-		if(s.getSeat() != this){
+		if(s != null && s.getSeat() != this){
 			s.setSeat(this);
 		}
 	}
