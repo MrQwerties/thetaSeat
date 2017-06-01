@@ -1,1 +1,4 @@
 Bian,Vincent,male,Asian,YES
+Tang,Nina,female,Asian,NO
+Cherfan,Marilyn,female,White,NO
+Bzhilyanskaya,Sofia,female,White,NO

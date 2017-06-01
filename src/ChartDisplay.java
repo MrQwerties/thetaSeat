@@ -203,9 +203,14 @@ public class ChartDisplay extends Canvas {
 	    drawChart(graphics);
 	    graphics.dispose();
 	    try {
+	    	if(imageName.length() < 4 || !imageName.substring(imageName.length() - 4).toLowerCase().equals(".png")){
+	    		imageName += ".png";
+	    	}
 	        FileOutputStream out = new FileOutputStream(imageName);
 	        ImageIO.write(image, "png", out);
 	        out.close();
+	        
+	        //Save the pairs
 	        PrintWriter printer = new PrintWriter(new File("thetaSeat_period" + Integer.toString(period) + "_data"));
 	        for(Twosie t : chart.getTwosies()){
 	        	printer.println(t);
@@ -243,8 +248,6 @@ public class ChartDisplay extends Canvas {
 		
 		ArrayList<Seat> switched = new ArrayList<Seat>();
 		switched.add(s1); switched.add(s2);
-		
-		toUndo.push(switched);
 		
 		myUndo.setEnabled(true);
 	}
@@ -292,7 +295,7 @@ public class ChartDisplay extends Canvas {
 	public void drawName(Graphics g, Student s){
 		if(s != null){
 			Position p = s.getPosition();
-			g.setFont(new Font("Arial", Font.PLAIN, 10));
+			g.setFont(new Font("Arial", Font.PLAIN, 9));
 			g.drawString(s.getLast(), (int)p.x() + 2, (int)p.y() + TWOSIE_SIZE - 4);
 			g.drawString(s.getFirst(), (int)p.x() + 2, (int)p.y() + TWOSIE_SIZE - 19);
 		}
@@ -303,8 +306,10 @@ public class ChartDisplay extends Canvas {
 	}
 
 	public void switchSelectedSeats() {
-		if(highlighted.size() >= 2){
+		if((highlighted.size() >= 2) && (highlighted.get(0).getStudent() != null) && (highlighted.get(1).getStudent() != null)){
 			switchSeats(highlighted.get(0), highlighted.get(1));
+			
+			toUndo.push((ArrayList<Seat>)highlighted.clone());
 		}
 		
 		while(highlighted.size() > 0){
