@@ -10,6 +10,7 @@ public class PeriodsPanel extends JPanel{
 	private HashMap<Integer, PeriodSelectionPanel> periods;
 	private JPanel periodPanels;
 	private int selectedPeriod;
+	private JScrollPane periodPanelScrollable;
 	
 	public PeriodsPanel(){
 		super(new BorderLayout());
@@ -20,7 +21,6 @@ public class PeriodsPanel extends JPanel{
 		JPanel instructions = new JPanel(new BorderLayout());		
 		instructions.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5),
 				BorderFactory.createLineBorder(Color.black, 1)));
-		
 		Font arialLarge = new Font("Arial", Font.PLAIN, 24);
 		Font arialNormal = new Font("Arial", Font.PLAIN, 18);
 		
@@ -47,11 +47,29 @@ public class PeriodsPanel extends JPanel{
 			periodPanels.add(periods.get(period));
 		}
 		
-		JScrollPane periodPanelScrollable = new JScrollPane(periodPanels, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		periodPanelScrollable = new JScrollPane(periodPanels, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		periodPanelScrollable.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
 		
 		this.add(instructions, BorderLayout.NORTH);
 		this.add(periodPanelScrollable, BorderLayout.CENTER);
+	}
+	
+	public void redrawPeriods(){
+		selectedPeriod = -1;
+		int[] periodList = loadPeriods();
+		
+		periodPanels.removeAll();
+		for(int period : periodList){
+			periodPanels.add(periods.get(period));
+		}
+		
+		revalidate();
+		repaint();
+	}
+	
+	public void addPeriod(int period){
+		periods.put(period, new PeriodSelectionPanel(period, this));
+		redrawPeriods();
 	}
 	
 	public static int[] loadPeriods(){
@@ -84,7 +102,8 @@ public class PeriodsPanel extends JPanel{
 			result[i] = periodNumbers.get(i);
 		}
 		
-		Arrays.sort(result);		
+		Arrays.sort(result);
+		
 		return result;
 	}
 	
@@ -97,7 +116,12 @@ public class PeriodsPanel extends JPanel{
 		}
 	}
 	
-	public void trueRemovePeriod(int period){
+	public void trueRemovePeriod(int period){		
+		if(selectedPeriod == period){
+			periods.get(selectedPeriod).unhighlight();
+			selectedPeriod = -1;
+		}
+		
 		periodPanels.remove(periods.get(period));
 		periods.remove(period);
 		

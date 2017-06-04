@@ -9,6 +9,7 @@ public class Student {
 	
 	private final double BADNESS_FROM_RACE = 2;
 	private final double BADNESS_FROM_GENDER = 3;
+	private final double BADNESS_FROM_VISION = 1;
 	
 	public Student(String last, String first, String g, String r, boolean vision){
 		lastName = last;
@@ -35,6 +36,12 @@ public class Student {
 	}
 	
 	public double badness(Student other){
+		if(other == this){
+			if(canSitHere()){
+				return 0;
+			}
+			return BADNESS_FROM_VISION;
+		}
 		double d = Math.pow(distance(other), 2);
 		double total = 0;
 		if(gender.equals(other.gender)){

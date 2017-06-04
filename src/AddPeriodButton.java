@@ -5,12 +5,18 @@ import javax.swing.*;
 import java.util.Scanner;
 
 public class AddPeriodButton extends JButton{
-	public AddPeriodButton(){ 
+	PeriodsPanel master;
+	
+	public AddPeriodButton(PeriodsPanel m){ 
 		super("ADD PERIOD");
+		
+		master = m;
 		
 		this.addActionListener(new ActionListener() { 
 			  public void actionPerformed(ActionEvent e) { 
 				    addPeriod();
+				    
+				    m.redrawPeriods();
 				  } 
 				} );
 	}
@@ -23,23 +29,40 @@ public class AddPeriodButton extends JButton{
 			try{
 				int period = Integer.parseInt(numberField.getText());
 				Scanner tryFile = new Scanner(new File(nameField.getText()));
-				Scanner periodList = new Scanner(new File(Constants.PERIOD_LIST_FILE_NAME));
+				tryFile.close();
+				Scanner periodList = null;
+				try{
+					periodList = new Scanner(new File(Constants.PERIOD_LIST_FILE_NAME));
+				} catch(FileNotFoundException e){
+					PrintWriter out = new PrintWriter(new File(Constants.PERIOD_LIST_FILE_NAME));
+					out.close();
+					periodList = new Scanner(new File(Constants.PERIOD_LIST_FILE_NAME));
+				}
 				String toWrite = "";
 				boolean added = false;
-				while(periodList.hasNextLine()){
-					String line = periodList.nextLine();
-					if(!added && Integer.parseInt(line.split(" ")[0]) > period){
-						added = true;
-						toWrite += period + " " + nameField.getText() + "\n";
+				if(!periodList.hasNextLine()){
+					toWrite = period + " " + nameField.getText() + "\n";
+				}
+				else{
+					while(periodList.hasNextLine()){
+						String line = periodList.nextLine();
+						if(!added && Integer.parseInt(line.split(" ")[0]) > period){
+							added = true;
+							toWrite += period + " " + nameField.getText() + "\n";
+						}
+						if(Integer.parseInt(line.split(" ")[0]) != period){
+							toWrite += line + "\n";
+						}
 					}
-					if(Integer.parseInt(line.split(" ")[0]) != period){
-						toWrite += line + "\n";
+					if(!added){
+						toWrite += period + " " + nameField.getText() + "\n";
 					}
 				}
 				periodList.close();
 				PrintWriter out = new PrintWriter(new File(Constants.PERIOD_LIST_FILE_NAME));
 				out.print(toWrite);
 				out.close();
+				master.addPeriod(period);
 			} catch (NumberFormatException e){
 				JOptionPane.showMessageDialog(null, "<html>Invalid input for the period number. The period number must be<br>entered in integer form (ex: 4).</html>",
 						"ERROR", JOptionPane.ERROR_MESSAGE);

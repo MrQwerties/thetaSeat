@@ -123,7 +123,7 @@ public class ChartDisplay extends Canvas {
 	}
 	
 	public void makeNewChart(){
-		chart.goodShuffle(200);
+		chart.goodShuffle(2000);
 		
 		Graphics g = getGraphics();
 		

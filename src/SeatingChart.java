@@ -30,7 +30,7 @@ public abstract class SeatingChart {
 	
 	public double badness(){
 		double total = 0;
-		for(int i = 0; i < students.size() - 1; i++){
+		for(int i = 0; i < students.size(); i++){
 			for(int j = i; j < students.size(); j++){
 				if(students.get(i) != null && students.get(j) != null){
 					total += students.get(i).badness(students.get(j));
