@@ -27,8 +27,12 @@ public class ChartDisplay extends Canvas {
 	private UndoButton myUndo;
 	private RedoButton myRedo;
 	
+	private boolean hasChart;
+	
 	private final int TWOSIE_SIZE = 65;
 	private final int TWOSIE_DOTS = 6;
+	private final int CHART_ITERATIONS = 5000;
+	private final int CLASS_SIZE = 32;
 	
 	public ChartDisplay(int p){
 		super();
@@ -42,6 +46,8 @@ public class ChartDisplay extends Canvas {
 		highlighted = new ArrayList<Seat>();
 		toUndo = new ArrayDeque<ArrayList<Seat>>();
 		toRedo = new ArrayDeque<ArrayList<Seat>>();
+		
+		hasChart = false;
 		
 		addMouseListener(new MouseAdapter() {
             @Override
@@ -123,7 +129,7 @@ public class ChartDisplay extends Canvas {
 	}
 	
 	public void makeNewChart(){
-		chart.goodShuffle(2000);
+		chart.goodShuffle(CHART_ITERATIONS);
 		
 		Graphics g = getGraphics();
 		
@@ -132,6 +138,9 @@ public class ChartDisplay extends Canvas {
 		}
 		
 		drawChart(g);
+		reset();
+		
+		hasChart = true;
 		
 		mySave.setEnabled(true); //Now that there's a chart, the user can save it
 	}
@@ -168,6 +177,13 @@ public class ChartDisplay extends Canvas {
 		
 		while(inFile.hasNextLine()){
 			result.add(new Student(inFile.nextLine()));
+		}
+		
+		if(result.size() > CLASS_SIZE){
+			JOptionPane.showMessageDialog((JFrame) SwingUtilities.getWindowAncestor(this),
+					"<html>This class has more students than the number of seats.<br>Only the first " + CLASS_SIZE + " students will be used.</html>",
+					"WARNING", JOptionPane.WARNING_MESSAGE);
+			result = new ArrayList<Student>(result.subList(0, CLASS_SIZE));
 		}
 		
 		return result;
@@ -226,10 +242,12 @@ public class ChartDisplay extends Canvas {
 	}
 	
 	public void handleClick(int x, int y){
-		for(Seat s : chart.getSeats()){
-			if((s.getPosition().x() < x) && (x < s.getPosition().x() + TWOSIE_SIZE)
-				&&(s.getPosition().y() < y) && (y < s.getPosition().y() + TWOSIE_SIZE)){
-				clickSeat(s);
+		if(hasChart){
+			for(Seat s : chart.getSeats()){
+				if((s.getPosition().x() < x) && (x < s.getPosition().x() + TWOSIE_SIZE)
+					&&(s.getPosition().y() < y) && (y < s.getPosition().y() + TWOSIE_SIZE)){
+					clickSeat(s);
+				}
 			}
 		}
 	}
@@ -306,7 +324,7 @@ public class ChartDisplay extends Canvas {
 	}
 
 	public void switchSelectedSeats() {
-		if((highlighted.size() >= 2) && (highlighted.get(0).getStudent() != null) && (highlighted.get(1).getStudent() != null)){
+		if((highlighted.size() >= 2)){// && (highlighted.get(0).getStudent() != null) && (highlighted.get(1).getStudent() != null)){
 			switchSeats(highlighted.get(0), highlighted.get(1));
 			
 			toUndo.push((ArrayList<Seat>)highlighted.clone());
@@ -316,6 +334,20 @@ public class ChartDisplay extends Canvas {
 			unhighlightSeat(highlighted.get(0));
 			highlighted.remove(0);
 		}
+	}
+	
+	public void reset(){
+		for(Seat s : highlighted){
+			unhighlightSeat(s);
+		}
+		
+		highlighted = new ArrayList<Seat>();
+		toUndo = new ArrayDeque<ArrayList<Seat>>();
+		toRedo = new ArrayDeque<ArrayList<Seat>>();
+		
+		myUndo.setEnabled(false);
+		myRedo.setEnabled(false);
+		mySwitch.setEnabled(false);
 	}
 	
 	public void undo(){
