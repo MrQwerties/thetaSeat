@@ -12,6 +12,8 @@ public class PeriodSelectionPanel extends JPanel{
 	public PeriodSelectionPanel(int period, PeriodsPanel m){
 		super(new BorderLayout());
 		this.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
+		setBackground(Constants.BACKGROUND_COLOR);
+		
 		periodNum = period;
 		master = m;
 		
@@ -20,6 +22,7 @@ public class PeriodSelectionPanel extends JPanel{
 		JLabel periodLabel = new JLabel("Period " + periodNum);
 		periodLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		periodLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+		periodLabel.setBackground(Constants.BACKGROUND_COLOR);
 		
 		JButton deleteButton = new PeriodDeleteButton(this);
 		

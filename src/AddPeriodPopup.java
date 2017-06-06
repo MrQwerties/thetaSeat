@@ -18,10 +18,10 @@ public class AddPeriodPopup extends JPanel{
 		fileLabel.setFont(normalFont);
 		periodLabel.setFont(normalFont);
 		
-		this.add(instructionsLabel);
-		this.add(fileLabel);
-		this.add(nameField);
-		this.add(periodLabel);
-		this.add(numberField);
+		add(instructionsLabel);
+		add(fileLabel);
+		add(nameField);
+		add(periodLabel);
+		add(numberField);
 	}
 }

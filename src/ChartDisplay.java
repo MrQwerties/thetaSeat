@@ -37,7 +37,7 @@ public class ChartDisplay extends Canvas {
 	public ChartDisplay(int p){
 		super();
 		setBackground(Color.WHITE);
-		setSize(400, 60 + 7 * TWOSIE_SIZE);
+		setSize(560, 60 + 7 * TWOSIE_SIZE);
 		
 		period = p;
 		
@@ -49,6 +49,8 @@ public class ChartDisplay extends Canvas {
 		
 		hasChart = false;
 		
+		createChart();
+		
 		addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -58,23 +60,37 @@ public class ChartDisplay extends Canvas {
 	}
 	
 	public void paint(Graphics g){
-        Graphics2D g2;
+		Graphics2D g2;
         g2 = (Graphics2D) g;
         
-        g2.drawString ("Period #: " + Integer.toString(period), 10, 20);
-        g2.drawString ("# of students: " + chart.numStudents(), 10, 35);
+        g2.drawString("Period #: " + Integer.toString(period), 10, 20);
+        g2.drawString("# of students: " + chart.numStudents(), 10, 35);
         
         //Draw the seats
         for(int i = 0; i < 2; i++){ //Vertical seats in inner ring
-        	makeTwosiePair(g2, 50 + 2 * TWOSIE_SIZE, 20 + 2 * i * TWOSIE_SIZE, false, true);
+        	drawTwosiePair(g2, 50 + 2 * TWOSIE_SIZE, 20 + 2 * i * TWOSIE_SIZE, false);
         }
-        makeTwosiePair(g2, getWidth()/2 - 2 * TWOSIE_SIZE, 20 + 4 * TWOSIE_SIZE, true, true);
+        drawTwosiePair(g2, getWidth()/2 - 2 * TWOSIE_SIZE, 20 + 4 * TWOSIE_SIZE, true);
   
         for(int i = 0; i < 3; i++){ //Vertical seats in outer ring
-        	makeTwosiePair(g2, 20, 50 + 2 * i * TWOSIE_SIZE, false, false);
+        	drawTwosiePair(g2, 20, 50 + 2 * i * TWOSIE_SIZE, false);
         }
-        for(int i = 0; i < 2; i++){ //Horizontal seats in inner ring
-        	makeTwosiePair(g2, 20 + 2 * i * TWOSIE_SIZE, 50 + 6 * TWOSIE_SIZE, true, false);
+        for(int i = 0; i < 2; i++){ //Horizontal seats in outer ring
+        	drawTwosiePair(g2, 20 + 2 * i * TWOSIE_SIZE, 50 + 6 * TWOSIE_SIZE, true);
+        }
+	}
+	
+	public void createChart(){ //Make the chart
+		for(int i = 0; i < 2; i++){ //Vertical seats in inner ring
+        	makeTwosiePair(50 + 2 * TWOSIE_SIZE, 20 + 2 * i * TWOSIE_SIZE, false, true);
+        }
+        makeTwosiePair(getWidth()/2 - 2 * TWOSIE_SIZE, 20 + 4 * TWOSIE_SIZE, true, true);
+  
+        for(int i = 0; i < 3; i++){ //Vertical seats in outer ring
+        	makeTwosiePair(20, 50 + 2 * i * TWOSIE_SIZE, false, false);
+        }
+        for(int i = 0; i < 2; i++){ //Horizontal seats in outer ring
+        	makeTwosiePair(20 + 2 * i * TWOSIE_SIZE, 50 + 6 * TWOSIE_SIZE, true, false);
         }
     }
 	
@@ -91,28 +107,41 @@ public class ChartDisplay extends Canvas {
 		}
 	}
 	
-	public void makeTwosie(Graphics2D g, int x, int y, boolean horizontal, boolean inner){
+	public void drawTwosie(Graphics2D g, int x, int y, boolean horizontal){
 		if(horizontal){
 			g.drawRect(x, y, 2 * TWOSIE_SIZE, TWOSIE_SIZE);
 			drawDottedLine(g, x + TWOSIE_SIZE, y, x + TWOSIE_SIZE, y + TWOSIE_SIZE, TWOSIE_DOTS);
-			
-			chart.addSeat(new Seat(new Position(x, y), inner));
-			chart.addSeat(new Seat(new Position(x + TWOSIE_SIZE, y), inner));
 		} else{
 			g.drawRect(x, y, TWOSIE_SIZE, 2 * TWOSIE_SIZE);
 			drawDottedLine(g, x, y + TWOSIE_SIZE, x + TWOSIE_SIZE, y + TWOSIE_SIZE, TWOSIE_DOTS);
-			
-			chart.addSeat(new Seat(new Position(x, y), inner));
+		}
+	}
+	
+	public void drawTwosiePair(Graphics2D g, int x, int y, boolean horizontal){
+		drawTwosie(g, x, y, horizontal);
+		if(horizontal){
+			drawTwosie(g, getWidth() - x - 2 * TWOSIE_SIZE, y, horizontal);
+		} else{
+			drawTwosie(g, getWidth() - x - TWOSIE_SIZE, y, horizontal);
+		}
+	}
+	
+	public void makeTwosie(int x, int y, boolean horizontal, boolean inner){
+		chart.addSeat(new Seat(new Position(x, y), inner));
+		
+		if(horizontal){
+			chart.addSeat(new Seat(new Position(x + TWOSIE_SIZE, y), inner));
+		} else{
 			chart.addSeat(new Seat(new Position(x, y + TWOSIE_SIZE), inner));
 		}
 	}
 	
-	public void makeTwosiePair(Graphics2D g, int x, int y, boolean horizontal, boolean inner){
-		makeTwosie(g, x, y, horizontal, inner);
+	public void makeTwosiePair(int x, int y, boolean horizontal, boolean inner){
+		makeTwosie(x, y, horizontal, inner);
 		if(horizontal){
-			makeTwosie(g, getWidth() - x - 2 * TWOSIE_SIZE, y, horizontal, inner);
+			makeTwosie(getWidth() - x - 2 * TWOSIE_SIZE, y, horizontal, inner);
 		} else{
-			makeTwosie(g, getWidth() - x - TWOSIE_SIZE, y, horizontal, inner);
+			makeTwosie(getWidth() - x - TWOSIE_SIZE, y, horizontal, inner);
 		}
 	}
 	
@@ -138,7 +167,7 @@ public class ChartDisplay extends Canvas {
 		}
 		
 		drawChart(g);
-		reset();
+		resetAll();
 		
 		hasChart = true;
 		
@@ -211,6 +240,8 @@ public class ChartDisplay extends Canvas {
 	}
 	
 	public void exportImage(String imageName) {
+		resetHighlight();
+		
 	    BufferedImage image = new BufferedImage(getWidth(), getHeight(),BufferedImage.TYPE_INT_RGB);
 	    Graphics2D graphics = image.createGraphics();
 	    paintAll(graphics);
@@ -219,25 +250,24 @@ public class ChartDisplay extends Canvas {
 	    drawChart(graphics);
 	    graphics.dispose();
 	    try {
-	    	if(imageName.length() < 4 || !imageName.substring(imageName.length() - 4).toLowerCase().equals(".png")){
-	    		imageName += ".png";
-	    	}
+	    	imageName = Constants.addExtension(imageName,  ".png");
 	        FileOutputStream out = new FileOutputStream(imageName);
 	        ImageIO.write(image, "png", out);
 	        out.close();
 	        
 	        //Save the pairs
-	        PrintWriter printer = new PrintWriter(new File("thetaSeat_period" + Integer.toString(period) + "_data"));
+	        String dataFileName = Constants.getTwosieDataFileName(period);
+	        PrintWriter printer = new PrintWriter(new File(dataFileName));
 	        for(Twosie t : chart.getTwosies()){
 	        	printer.println(t);
 	        }
 	        printer.close();
 	        
+	        Constants.hideFile(dataFileName);
+	        
 	        chart.setOldTwosies(loadOldTwosies());
 	    } catch (FileNotFoundException e) {
-	    	e.printStackTrace();
 	    } catch (IOException e) {
-	    	e.printStackTrace();
 	    }    
 	}
 	
@@ -324,7 +354,7 @@ public class ChartDisplay extends Canvas {
 	}
 
 	public void switchSelectedSeats() {
-		if((highlighted.size() >= 2)){// && (highlighted.get(0).getStudent() != null) && (highlighted.get(1).getStudent() != null)){
+		if((highlighted.size() >= 2)){
 			switchSeats(highlighted.get(0), highlighted.get(1));
 			
 			toUndo.push((ArrayList<Seat>)highlighted.clone());
@@ -336,18 +366,22 @@ public class ChartDisplay extends Canvas {
 		}
 	}
 	
-	public void reset(){
-		for(Seat s : highlighted){
-			unhighlightSeat(s);
-		}
-		
-		highlighted = new ArrayList<Seat>();
+	public void resetAll(){
+		resetHighlight();
 		toUndo = new ArrayDeque<ArrayList<Seat>>();
 		toRedo = new ArrayDeque<ArrayList<Seat>>();
 		
 		myUndo.setEnabled(false);
 		myRedo.setEnabled(false);
 		mySwitch.setEnabled(false);
+	}
+	
+	public void resetHighlight(){
+		for(Seat s : highlighted){
+			unhighlightSeat(s);
+		}
+		
+		highlighted = new ArrayList<Seat>();		
 	}
 	
 	public void undo(){

@@ -17,10 +17,12 @@ public class PeriodsPanel extends JPanel{
 		//This creates a thin black border with 30 pixels of padding around it where no other components can go		
 		this.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30),
 				BorderFactory.createLineBorder(Color.black, 1)));
+		setBackground(Constants.BACKGROUND_COLOR);
 		
-		JPanel instructions = new JPanel(new BorderLayout());		
+		JPanel instructions = new JPanel(new BorderLayout());
 		instructions.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5),
 				BorderFactory.createLineBorder(Color.black, 1)));
+		instructions.setBackground(Constants.BACKGROUND_COLOR);
 		Font arialLarge = new Font("Arial", Font.PLAIN, 24);
 		Font arialNormal = new Font("Arial", Font.PLAIN, 18);
 		
@@ -40,6 +42,7 @@ public class PeriodsPanel extends JPanel{
 		
 		periodPanels = new JPanel(new GridLayout(0, 1));
 		periodPanels.setMaximumSize(new Dimension(200, 200));
+		periodPanels.setBackground(Constants.BACKGROUND_COLOR);
 		
 		periods = new HashMap<Integer, PeriodSelectionPanel>();
 		for(int period : periodList){
@@ -49,13 +52,14 @@ public class PeriodsPanel extends JPanel{
 		
 		periodPanelScrollable = new JScrollPane(periodPanels, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		periodPanelScrollable.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+		periodPanelScrollable.setBackground(Constants.BACKGROUND_COLOR);
 		
 		this.add(instructions, BorderLayout.NORTH);
 		this.add(periodPanelScrollable, BorderLayout.CENTER);
 	}
 	
 	public void redrawPeriods(){
-		selectedPeriod = -1;
+		unselectPeriod();
 		int[] periodList = loadPeriods();
 		
 		periodPanels.removeAll();
@@ -74,6 +78,8 @@ public class PeriodsPanel extends JPanel{
 	
 	public static int[] loadPeriods(){
 		//TODO: automatically remove bad files
+		Constants.unhideFile(Constants.PERIOD_LIST_FILE_NAME);
+		
 		Scanner periodList = null;
 		try{
 			periodList = new Scanner(new File(Constants.PERIOD_LIST_FILE_NAME));
@@ -95,6 +101,8 @@ public class PeriodsPanel extends JPanel{
 		}
 		
 		periodList.close();
+		
+		Constants.hideFile(Constants.PERIOD_LIST_FILE_NAME);
 
 		int[] result = new int[periodNumbers.size()];
 		
@@ -133,6 +141,7 @@ public class PeriodsPanel extends JPanel{
 		try{
 			periodFile = new Scanner(new File(Constants.PERIOD_LIST_FILE_NAME));
 		} catch (FileNotFoundException e){
+			e.printStackTrace();
 			//This should never happen
 		}
 		
@@ -145,11 +154,18 @@ public class PeriodsPanel extends JPanel{
 			}
 		}
 		
+		periodFile.close();
+		
+		Constants.deleteFile(Constants.getTwosieDataFileName(period));
+		
 		try{
+			Constants.unhideFile(Constants.PERIOD_LIST_FILE_NAME); //PrintWriters apparently can't access hidden files
 			PrintWriter out = new PrintWriter(Constants.PERIOD_LIST_FILE_NAME);
 			out.print(result);
 			out.close();
+			Constants.hideFile(Constants.PERIOD_LIST_FILE_NAME);
 		} catch (FileNotFoundException e){
+			e.printStackTrace();
 			//This line shouldn't happen
 		}
 	}
@@ -169,5 +185,12 @@ public class PeriodsPanel extends JPanel{
 
 	public int getSelectedPeriod() {
 		return selectedPeriod;
+	}
+
+	public void unselectPeriod() {
+		if(selectedPeriod != -1){
+			periods.get(selectedPeriod).unhighlight();
+			selectedPeriod = -1;
+		}
 	}
 }
