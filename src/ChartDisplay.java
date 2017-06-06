@@ -49,8 +49,6 @@ public class ChartDisplay extends Canvas {
 		
 		hasChart = false;
 		
-		createChart();
-		
 		addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -77,6 +75,10 @@ public class ChartDisplay extends Canvas {
         }
         for(int i = 0; i < 2; i++){ //Horizontal seats in outer ring
         	drawTwosiePair(g2, 20 + 2 * i * TWOSIE_SIZE, 50 + 6 * TWOSIE_SIZE, true);
+        }
+        
+        if(!hasChart){
+        	createChart();
         }
 	}
 	
