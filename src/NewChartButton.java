@@ -11,10 +11,17 @@ public class NewChartButton extends ChartButton{
 		setBorder(MyBorders.borderWithPadding(0, 10, 10, 10, 10));
 		
 		this.addActionListener(new ActionListener() { 
+			
 			  public void actionPerformed(ActionEvent e) {
+					setText("asdf");
+					revalidate();
+					repaint();
+					
 				    myChart.makeNewChart();
 				  } 
 				} );
+		
+		
 	}
 
 }

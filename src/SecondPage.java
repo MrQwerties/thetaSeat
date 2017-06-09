@@ -5,6 +5,7 @@ public class SecondPage extends JFrame {
 	public SecondPage(int period){
 		super();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setResizable(false);
         setTitle("thetaSeat");
         setSize(600, 700);
         setLocationRelativeTo(null);

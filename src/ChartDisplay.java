@@ -79,6 +79,8 @@ public class ChartDisplay extends Canvas {
         
         if(!hasChart){
         	createChart();
+        } else{
+        	drawChart(g);
         }
 	}
 	
@@ -211,10 +213,15 @@ public class ChartDisplay extends Canvas {
 		}
 		
 		if(result.size() > CLASS_SIZE){
+			String removedMessage = "<html>This class has more students than the number of seats. Removed students:";
+			while(result.size() > CLASS_SIZE){
+				removedMessage += "<br>";
+				removedMessage += result.remove(CLASS_SIZE).getName();
+			}
+			removedMessage += "</html>";
 			JOptionPane.showMessageDialog((JFrame) SwingUtilities.getWindowAncestor(this),
-					"<html>This class has more students than the number of seats.<br>Only the first " + CLASS_SIZE + " students will be used.</html>",
+					removedMessage,
 					"WARNING", JOptionPane.WARNING_MESSAGE);
-			result = new ArrayList<Student>(result.subList(0, CLASS_SIZE));
 		}
 		
 		return result;

@@ -15,7 +15,7 @@ public class PeriodsPanel extends JPanel{
 	public PeriodsPanel(){
 		super(new BorderLayout());
 		//This creates a thin black border with 30 pixels of padding around it where no other components can go		
-		this.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30),
+		setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30),
 				BorderFactory.createLineBorder(Color.black, 1)));
 		setBackground(Constants.BACKGROUND_COLOR);
 		
