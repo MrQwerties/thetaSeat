@@ -12,11 +12,7 @@ public class NewChartButton extends ChartButton{
 		
 		this.addActionListener(new ActionListener() { 
 			
-			  public void actionPerformed(ActionEvent e) {
-					setText("asdf");
-					revalidate();
-					repaint();
-					
+			  public void actionPerformed(ActionEvent e) {					
 				    myChart.makeNewChart();
 				  } 
 				} );

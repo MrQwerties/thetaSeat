@@ -31,7 +31,7 @@ public class ChartDisplay extends Canvas {
 	
 	private final int TWOSIE_SIZE = 65;
 	private final int TWOSIE_DOTS = 6;
-	private final int CHART_ITERATIONS = 5000;
+	private final int CHART_ITERATIONS = 800;
 	private final int CLASS_SIZE = 32;
 	
 	public ChartDisplay(int p){
